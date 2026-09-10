@@ -1,4 +1,5 @@
 ﻿using JetBrains.Annotations;
+using TaskTracker.Application.Common;
 using TaskTracker.Application.Tasks;
 
 namespace TaskTracker.Tests.Application.Tasks;
@@ -121,6 +122,119 @@ public class TaskServiceTest
         
         Assert.True(deleted);
         Assert.Null(result);
+    }
+    /// <summary>
+    /// Negative
+    /// </summary>
+    [Fact]
+    public async Task UpdateAsync_WhenTaskDoesNotExist_ReturnsNull()
+    {
+        var (service, _) = CreateService();
+
+        var result = await service.UpdateAsync(
+            Guid.NewGuid(), 
+            new UpdateTaskRequest("New Test Title", "New Test Content"),
+            CancellationToken.None
+            );
+        
+        Assert.Null(result);
+    }
+
+    [Fact]
+    public async Task CompleteAsync_WhenTaskDoesNotExist_ReturnsFalse()
+    {
+        var (service, _) = CreateService();
+
+        var result = await service.CompleteAsync(
+            Guid.NewGuid(), 
+            CancellationToken.None
+            );
+        
+        Assert.False(result);
+    }
+
+    [Fact]
+    public async Task DeleteAsync_WhenTaskDoesNotExist_ReturnsFalse()
+    {
+        var (service, _) = CreateService();
+        
+        var result = await service.DeleteAsync(
+            Guid.NewGuid(),
+            CancellationToken.None
+            );
+        
+        Assert.False(result);
+    }
+
+    /// <summary>
+    /// Pagination & Foltering
+    /// </summary>
+
+    [Fact]
+    public async Task GetAllPagedAsync_WhenIsCompletedFilterIdSet_ReturnsFilteredTasks()
+    {
+        var (service, _) = CreateService();
+
+        var first = await service.CreateAsync(
+            new  CreateTaskRequest("Test title 1", "Test content 1"),
+            CancellationToken.None
+            );
+
+        var second = await service.CreateAsync(
+            new  CreateTaskRequest("Test title 2", "Test content 2"),
+            CancellationToken.None
+            );
+        
+        await service.CompleteAsync(second.Id, CancellationToken.None);
+
+        var result = await service.GetAllPagedAsync(
+            new GetTasksRequest(
+                Page: 1,
+                PageSize: 20,
+                IsCompleted: true),
+            CancellationToken.None
+            );
+        
+        Assert.Equal(1, result.TotalCount);
+        Assert.Single(result.Items);
+        Assert.Equal(second.Id, result.Items[0].Id);
+        Assert.True(result.Items[0].IsCompleted);
+    }
+
+    /// <summary>
+    /// ApplicationValidationException check
+    /// </summary>
+    
+    [Fact]
+    public async Task GetAllPagedAsync_WhenPageIsInvalid_ThrowsApplicationValidationException()
+    {
+        var (service, _) = CreateService();
+
+        var action = async () => await service.GetAllPagedAsync(
+            new GetTasksRequest(
+                Page: 0,
+                PageSize: 20,
+                IsCompleted: null),
+            CancellationToken.None
+        );
+
+        await Assert.ThrowsAsync<ApplicationValidationException>(action);
+    }
+    
+    [Fact]
+    public async Task GetAllPagedAsync_WhenPageSizeIsInvalid_ThrowsApplicationValidationException()
+    {
+        var (service, _) = CreateService();
+
+        var action = async () => await service.GetAllPagedAsync(
+            new GetTasksRequest(
+                Page: 1,
+                PageSize: 101,
+                IsCompleted: null),
+            CancellationToken.None
+        );
+
+        await Assert.ThrowsAsync<ApplicationValidationException>(action);
     }
 
     private static (TaskService service, FakeRepository repository) CreateService()
