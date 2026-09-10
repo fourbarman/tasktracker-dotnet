@@ -8,8 +8,7 @@ public class TaskServiceTest
     [Fact]
     public async Task CreateAsync_WhenRequestIsValid_CreatesTask()
     {
-        var repository = new FakeRepository();
-        var service = new TaskService(repository);
+        var (service, _) = CreateService();
 
         var request = new CreateTaskRequest(
             "Test title",
@@ -30,8 +29,7 @@ public class TaskServiceTest
     [Fact]
     public async Task GetByIdAsync_WhenTaskExists_ReturnsTask()
     {
-        var repository = new FakeRepository();
-        var service = new TaskService(repository);
+        var (service, _) = CreateService();
 
         var created = await service.CreateAsync(
             new CreateTaskRequest("Test title", "Test content"),
@@ -50,8 +48,7 @@ public class TaskServiceTest
     [Fact]
     public async Task GetByIdAsync_WhenTaskDoesNotExist_ReturnsNull()
     {
-        var repository = new FakeRepository();
-        var service = new TaskService(repository);
+        var (service, _) = CreateService();
         
         var result = await service.GetByIdAsync(
             Guid.NewGuid(),
@@ -63,8 +60,7 @@ public class TaskServiceTest
     [Fact]
     public async Task UpdateAsync_WhenTaskExists_UpdatesTitleAndDescription()
     {
-        var repository = new FakeRepository();
-        var service = new TaskService(repository);
+        var (service, _) = CreateService();
 
         var created = await service.CreateAsync(
             new CreateTaskRequest("Test title", "Test content"),
@@ -83,8 +79,7 @@ public class TaskServiceTest
     [Fact]
     public async Task CompleteAsync_WhenTaskExists_CompletesTask()
     {
-        var repository = new FakeRepository();
-        var service = new TaskService(repository);
+        var (service, _) = CreateService();
 
         var created = await service.CreateAsync(
             new CreateTaskRequest("Test title", "Test content"),
@@ -99,8 +94,8 @@ public class TaskServiceTest
             created.Id,
             CancellationToken.None);
         
+        Assert.True(completed);
         Assert.NotNull(result);
-        Assert.Equal(created.Id, result.Id);
         Assert.True(result.IsCompleted);
         Assert.NotNull(result.CompletedAt);
     }
@@ -108,8 +103,7 @@ public class TaskServiceTest
     [Fact]
     public async Task DeleteAsync_WhenTaskExists_DeletesTask()
     {
-        var repository = new FakeRepository();
-        var service = new TaskService(repository);
+        var (service, _) = CreateService();
         
         var created = await service.CreateAsync(
             new CreateTaskRequest("Test title", "Test content"),
@@ -127,5 +121,13 @@ public class TaskServiceTest
         
         Assert.True(deleted);
         Assert.Null(result);
+    }
+
+    private static (TaskService service, FakeRepository repository) CreateService()
+    {
+        var repository = new FakeRepository();
+        var service = new TaskService(repository);
+        
+        return (service, repository);
     }
 }
