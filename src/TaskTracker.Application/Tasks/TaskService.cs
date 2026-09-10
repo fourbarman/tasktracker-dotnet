@@ -22,7 +22,7 @@ public class TaskService
         if (task == null)
             return null;
         
-        task.Rename(request.Title);
+        task.Update(request.Title, request.Description);
         
         await _taskRepository.SaveChangesAsync(cancellationToken);
 

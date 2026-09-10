@@ -49,9 +49,21 @@ public class TaskItem
     {
         if (string.IsNullOrWhiteSpace(title))
         {
-            throw new DomainValidationException("title", "Title cannot be null or whitespace.");
+            throw new DomainValidationException(
+                "title", "Title cannot be null or whitespace.");
         }
         
         Title = title;
+    }
+
+    public void ChangeDescription(string? newDescription)
+    {
+        Description = newDescription;
+    }
+
+    public void Update(string title, string? description)
+    {
+        Rename(title);
+        ChangeDescription(description);
     }
 }
