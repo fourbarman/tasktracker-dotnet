@@ -7,8 +7,8 @@ namespace TaskTracker.Domain.Tasks;
  */
 public class TaskItem
 {
-    private const int MaxTitleLength = 200;
-    private const int MaxDescriptionLength = 2000;
+    public const int MaxTitleLength = 200;
+    public const int MaxDescriptionLength = 2000;
     public Guid Id { get; private set; }
     public string Title { get; private set; }
     public string? Description { get; private set; }

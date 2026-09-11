@@ -17,12 +17,12 @@ public class TaskItemConfiguration : IEntityTypeConfiguration<TaskItem>
         
         builder.Property(task => task.Title)
             .HasColumnName("title")
-            .HasMaxLength(200)
+            .HasMaxLength(TaskItem.MaxTitleLength)
             .IsRequired();
 
         builder.Property(task => task.Description)
             .HasColumnName("description")
-            .HasMaxLength(2000);
+            .HasMaxLength(TaskItem.MaxDescriptionLength);
         
         builder.Property(task => task.IsCompleted)
             .HasColumnName("is_completed")

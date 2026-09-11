@@ -79,7 +79,7 @@ public class TaskItemTests
     [Fact]
     public void Constructor_WhenTitleIsTooLong_ThrowsDomainValidationException()
     {
-        var title = new string('a', 201);
+        var title = new string('a', TaskItem.MaxTitleLength + 1);
         
         var action = () => new TaskItem(title, null);
         
@@ -89,7 +89,7 @@ public class TaskItemTests
     [Fact]
     public void Constructor_WhenDescriptionIsTooLong_ThrowsDomainValidationException()
     {
-        var description = new string('a', 2001);
+        var description = new string('a', TaskItem.MaxDescriptionLength + 1);
         
         var action = () => new TaskItem("Valid title", description);
         
@@ -110,7 +110,7 @@ public class TaskItemTests
     public void ChangeDescription_WhenTitleIsValidAndDescriptionIsTooLong_ThrowsDomainValidationException()
     {
         var task = new TaskItem("Valid title", null);
-        var description = new string('a', 2001);
+        var description = new string('a', TaskItem.MaxDescriptionLength + 1);
         
         var action = () => task.ChangeDescription(description);
         
