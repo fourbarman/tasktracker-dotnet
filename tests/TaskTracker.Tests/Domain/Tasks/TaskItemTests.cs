@@ -75,4 +75,45 @@ public class TaskItemTests
         //Assert
         Assert.Throws<DomainValidationException>(action);
     }
+
+    [Fact]
+    public void Constructor_WhenTitleIsTooLong_ThrowsDomainValidationException()
+    {
+        var title = new string('a', 201);
+        
+        var action = () => new TaskItem(title, null);
+        
+        Assert.Throws<DomainValidationException>(action);
+    }
+    
+    [Fact]
+    public void Constructor_WhenDescriptionIsTooLong_ThrowsDomainValidationException()
+    {
+        var description = new string('a', 2001);
+        
+        var action = () => new TaskItem("Valid title", description);
+        
+        Assert.Throws<DomainValidationException>(action);
+    }
+    
+    [Fact]
+    public void ChangeDescription_WhenTitleAndDescriptionAreValid_ChangeDescription()
+    {
+        var task = new TaskItem("Valid title", null);
+        
+        task.ChangeDescription("Valid description");
+        
+        Assert.Equal("Valid description", task.Description);
+    }
+    
+    [Fact]
+    public void ChangeDescription_WhenTitleIsValidAndDescriptionIsTooLong_ThrowsDomainValidationException()
+    {
+        var task = new TaskItem("Valid title", null);
+        var description = new string('a', 2001);
+        
+        var action = () => task.ChangeDescription(description);
+        
+        Assert.Throws<DomainValidationException>(action);
+    }
 }
