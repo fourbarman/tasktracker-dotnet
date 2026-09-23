@@ -1,10 +1,18 @@
 ﻿using TaskTracker.Domain.Common;
 using TaskTracker.Domain.Tasks;
+using Xunit.Abstractions;
 
 namespace TaskTracker.Tests.Domain.Tasks;
 
 public class TaskItemTests
 {
+    private readonly ITestOutputHelper _testOutputHelper;
+
+    public TaskItemTests(ITestOutputHelper testOutputHelper)
+    {
+        _testOutputHelper = testOutputHelper;
+    }
+
     [Fact]
     public void Constructor_WhenTitleIsValid_CreateTask()
     {
@@ -13,7 +21,7 @@ public class TaskItemTests
         var description = "Sample description";
         
         //Act
-        var task = new TaskItem(title, description);
+        var task = new TaskItem(title, description, null);
         
         //Assert
         Assert.NotEqual(Guid.Empty, task.Id);
@@ -30,17 +38,38 @@ public class TaskItemTests
         var title = "";
 
         //Act
-        var action = () => new TaskItem(title, null);
+        var action = () => new TaskItem(title, null, null);
 
         //Assert
         Assert.Throws<DomainValidationException>(action);
+    }
+    
+    [Fact]
+    public void Constructor_WhenDueDateIsInThePast_ThrowException()
+    {
+        var dueDate = DateTimeOffset.UtcNow.AddDays(-1);
+        
+        var action = () => new TaskItem("Sample title", null, dueDate);
+        
+        Assert.Throws<DomainValidationException>(action);
+    }
+    
+    [Fact]
+    public void Constructor_WhenDueDateIsInTheFuture_SetDueDate()
+    {
+        //Arrange
+        var dueDate = DateTimeOffset.UtcNow.AddDays(1);
+        
+        var task = new TaskItem("Sample title", null, dueDate);
+        
+        Assert.Equal(dueDate, task.DueDate);
     }
 
     [Fact]
     public void Complete_WhenTaskIsNotCompleted_MarksTaskAsCompleted()
     {
         //Arrange
-        var task = new TaskItem("Sample title", null);
+        var task = new TaskItem("Sample title", null, null);
         
         //Act
         task.Complete();
@@ -54,7 +83,7 @@ public class TaskItemTests
     public void Rename_WhenTaskTitleIsValid_ChangeTitle()
     {
         //Arrange
-        var task = new TaskItem("Old title", null);
+        var task = new TaskItem("Old title", null, null);
         
         //Act
         task.Rename("New title");
@@ -67,7 +96,7 @@ public class TaskItemTests
     public void Rename_WhenTaskTitleIsEmpty_ThrowException()
     {
         //Arrange
-        var task = new TaskItem("Old title", null);
+        var task = new TaskItem("Old title", null, null);
         
         //Act
         var action = () => task.Rename("");
@@ -81,7 +110,7 @@ public class TaskItemTests
     {
         var title = new string('a', TaskItem.MaxTitleLength + 1);
         
-        var action = () => new TaskItem(title, null);
+        var action = () => new TaskItem(title, null, null);
         
         Assert.Throws<DomainValidationException>(action);
     }
@@ -91,7 +120,7 @@ public class TaskItemTests
     {
         var description = new string('a', TaskItem.MaxDescriptionLength + 1);
         
-        var action = () => new TaskItem("Valid title", description);
+        var action = () => new TaskItem("Valid title", description, null);
         
         Assert.Throws<DomainValidationException>(action);
     }
@@ -99,7 +128,7 @@ public class TaskItemTests
     [Fact]
     public void ChangeDescription_WhenTitleAndDescriptionAreValid_ChangeDescription()
     {
-        var task = new TaskItem("Valid title", null);
+        var task = new TaskItem("Valid title", null, null);
         
         task.ChangeDescription("Valid description");
         
@@ -109,7 +138,7 @@ public class TaskItemTests
     [Fact]
     public void ChangeDescription_WhenTitleIsValidAndDescriptionIsTooLong_ThrowsDomainValidationException()
     {
-        var task = new TaskItem("Valid title", null);
+        var task = new TaskItem("Valid title", null, null);
         var description = new string('a', TaskItem.MaxDescriptionLength + 1);
         
         var action = () => task.ChangeDescription(description);

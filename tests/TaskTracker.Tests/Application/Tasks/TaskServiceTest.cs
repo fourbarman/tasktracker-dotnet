@@ -13,7 +13,8 @@ public class TaskServiceTest
 
         var request = new CreateTaskRequest(
             "Test title",
-            "Test content"
+            "Test content",
+            null
         );
 
         var result = await service.CreateAsync(
@@ -33,7 +34,7 @@ public class TaskServiceTest
         var (service, _) = CreateService();
 
         var created = await service.CreateAsync(
-            new CreateTaskRequest("Test title", "Test content"),
+            new CreateTaskRequest("Test title", "Test content", null),
             CancellationToken.None
             );
 
@@ -64,12 +65,12 @@ public class TaskServiceTest
         var (service, _) = CreateService();
 
         var created = await service.CreateAsync(
-            new CreateTaskRequest("Test title", "Test content"),
+            new CreateTaskRequest("Test title", "Test content", null),
             CancellationToken.None);
 
         var result = await service.UpdateAsync(
             created.Id,
-            new UpdateTaskRequest("New Test Title", "New Test Description"),
+            new UpdateTaskRequest("New Test Title", "New Test Description", null),
             CancellationToken.None);
 
         Assert.NotNull(result);
@@ -83,7 +84,7 @@ public class TaskServiceTest
         var (service, _) = CreateService();
 
         var created = await service.CreateAsync(
-            new CreateTaskRequest("Test title", "Test content"),
+            new CreateTaskRequest("Test title", "Test content", null),
             CancellationToken.None);
 
         var completed = await service.CompleteAsync(
@@ -107,7 +108,7 @@ public class TaskServiceTest
         var (service, _) = CreateService();
         
         var created = await service.CreateAsync(
-            new CreateTaskRequest("Test title", "Test content"),
+            new CreateTaskRequest("Test title", "Test content", null),
             CancellationToken.None);
 
         var deleted = await service.DeleteAsync(
@@ -133,7 +134,7 @@ public class TaskServiceTest
 
         var result = await service.UpdateAsync(
             Guid.NewGuid(), 
-            new UpdateTaskRequest("New Test Title", "New Test Content"),
+            new UpdateTaskRequest("New Test Title", "New Test Content", null),
             CancellationToken.None
             );
         
@@ -176,12 +177,12 @@ public class TaskServiceTest
         var (service, _) = CreateService();
 
         var first = await service.CreateAsync(
-            new  CreateTaskRequest("Test title 1", "Test content 1"),
+            new  CreateTaskRequest("Test title 1", "Test content 1", null),
             CancellationToken.None
             );
 
         var second = await service.CreateAsync(
-            new  CreateTaskRequest("Test title 2", "Test content 2"),
+            new  CreateTaskRequest("Test title 2", "Test content 2", null),
             CancellationToken.None
             );
         

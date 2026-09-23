@@ -22,7 +22,10 @@ public class TaskService
         if (task == null)
             return null;
         
-        task.Update(request.Title, request.Description);
+        task.Update(
+            request.Title, 
+            request.Description, 
+            request.DueDate);
         
         await _taskRepository.SaveChangesAsync(cancellationToken);
 
@@ -43,7 +46,10 @@ public class TaskService
 
     public async Task<TaskResponse> CreateAsync(CreateTaskRequest request, CancellationToken cancellationToken)
     {
-        var task = new TaskItem(request.Title, request.Description);
+        var task = new TaskItem(
+            request.Title, 
+            request.Description, 
+            request.DueDate);
         
         await _taskRepository.AddAsync(task, cancellationToken);
         await _taskRepository.SaveChangesAsync(cancellationToken);
@@ -126,7 +132,8 @@ public class TaskService
             task.Description,
             task.IsCompleted,
             task.CreatedAt,
-            task.CompletedAt
+            task.CompletedAt,
+            task.DueDate
         );
     }
 }

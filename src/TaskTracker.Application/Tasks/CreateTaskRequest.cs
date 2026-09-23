@@ -2,4 +2,5 @@
 
 public record CreateTaskRequest(
     string Title,
-    string? Description);
+    string? Description,
+    DateTimeOffset? DueDate);

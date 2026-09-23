@@ -2,5 +2,6 @@
 
 public record UpdateTaskRequest(
     string Title,
-    string? Description
+    string? Description,
+    DateTimeOffset? DueDate
     );

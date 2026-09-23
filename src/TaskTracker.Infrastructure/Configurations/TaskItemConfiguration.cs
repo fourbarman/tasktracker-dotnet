@@ -37,8 +37,14 @@ public class TaskItemConfiguration : IEntityTypeConfiguration<TaskItem>
             .HasColumnName("completed_at")
             .HasColumnType("timestamp with time zone");
 
+        builder.Property(task => task.DueDate)
+            .HasColumnName("due_date")
+            .HasColumnType("timestamp with time zone");
+
         builder.HasIndex(task => task.CreatedAt);
         
         builder.HasIndex(task => task.IsCompleted);
+        
+        builder.HasIndex(task => task.DueDate);
     }
 }

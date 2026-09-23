@@ -6,5 +6,6 @@ public record TaskResponse(
     string? Description,
     bool IsCompleted,
     DateTimeOffset CreatedAt,
-    DateTimeOffset? CompletedAt
+    DateTimeOffset? CompletedAt,
+    DateTimeOffset? DueDate
     );
