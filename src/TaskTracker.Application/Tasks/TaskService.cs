@@ -71,6 +71,11 @@ public class TaskService
             errors["pageSize"] = ["Page size cannot be less than zero and greater than 100"];
         }
 
+        if (request.DueBefore is not null && request.DueBefore.Value.Offset != TimeSpan.Zero)
+        {
+            errors["dueBefore"] = ["DueBefore must be in UTC."];
+        }
+
         if (errors.Count > 0)
         {
             throw new ApplicationValidationException(errors);
@@ -82,9 +87,13 @@ public class TaskService
             skip,
             request.PageSize,
             request.IsCompleted,
+            request.DueBefore,
             cancellationToken);
         
-        var totalCount = await _taskRepository.CountAsync(request.IsCompleted, cancellationToken);
+        var totalCount = await _taskRepository.CountAsync(
+            request.IsCompleted,
+            request.DueBefore,
+            cancellationToken);
         
         var items = tasks
             .Select(ToResponse)

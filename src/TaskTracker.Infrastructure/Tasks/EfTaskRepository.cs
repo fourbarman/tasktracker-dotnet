@@ -30,6 +30,7 @@ public class EfTaskRepository : ITaskRepository
         int skip, 
         int take, 
         bool? isCompleted,
+        DateTimeOffset? dueBefore,
         CancellationToken cancellationToken)
     {
         var query = _dbContext.Tasks.AsNoTracking();
@@ -37,6 +38,11 @@ public class EfTaskRepository : ITaskRepository
         if (isCompleted.HasValue)
         {
             query = query.Where(task => task.IsCompleted == isCompleted.Value);
+        }
+
+        if (dueBefore.HasValue)
+        {
+            query = query.Where(task => task.DueDate != null && task.DueDate <= dueBefore.Value);
         }
         
         return await query
@@ -46,12 +52,21 @@ public class EfTaskRepository : ITaskRepository
             .ToListAsync(cancellationToken);
     }
 
-    public async Task<int> CountAsync(bool? isCompleted, CancellationToken cancellationToken)
+    public async Task<int> CountAsync(
+        bool? isCompleted,
+        DateTimeOffset? dueBefore,
+        CancellationToken cancellationToken)
     {
         var query = _dbContext.Tasks.AsNoTracking();
+        
         if (isCompleted.HasValue)
         {
             query = query.Where(task => task.IsCompleted == isCompleted.Value);
+        }
+
+        if (dueBefore.HasValue)
+        {
+            query = query.Where(task => task.DueDate != null && task.DueDate <= dueBefore.Value);
         }
         
         return await query.CountAsync(cancellationToken);

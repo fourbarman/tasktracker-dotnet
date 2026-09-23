@@ -16,9 +16,13 @@ public interface ITaskRepository
         int skip,
         int take,
         bool? isCompleted,
+        DateTimeOffset? dueBefore,
         CancellationToken cancellationToken);
 
-    Task<int> CountAsync(bool? isCompleted, CancellationToken cancellationToken);
+    Task<int> CountAsync(
+        bool? isCompleted,
+        DateTimeOffset? dueBefore,
+        CancellationToken cancellationToken);
 
     Task SaveChangesAsync(CancellationToken cancellationToken);
 

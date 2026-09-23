@@ -23,6 +23,7 @@ public class InMemoryTaskRepository : ITaskRepository
         int skip, 
         int take,
         bool? isCompleted,
+        DateTimeOffset? dueBefore,
         CancellationToken cancellationToken)
     {
         IEnumerable<TaskItem> query = _tasks;
@@ -30,6 +31,11 @@ public class InMemoryTaskRepository : ITaskRepository
         if (isCompleted.HasValue)
         {
             query = query.Where(task => task.IsCompleted == isCompleted.Value);
+        }
+
+        if (dueBefore.HasValue)
+        {
+            query = query.Where(task => task.DueDate != null && task.DueDate <= dueBefore.Value);
         }
         
         IReadOnlyList<TaskItem> result = query
@@ -41,13 +47,21 @@ public class InMemoryTaskRepository : ITaskRepository
         return Task.FromResult(result);
     }
 
-    public Task<int> CountAsync(bool? isCompleted, CancellationToken cancellationToken)
+    public Task<int> CountAsync(
+        bool? isCompleted, 
+        DateTimeOffset? dueBefore,
+        CancellationToken cancellationToken)
     {
         IEnumerable<TaskItem> query = _tasks;
 
         if (isCompleted.HasValue)
         {
             query = query.Where(task => task.IsCompleted == isCompleted.Value);
+        }
+
+        if (dueBefore.HasValue)
+        {
+            query = query.Where(task => task.DueDate != null && task.DueDate <= dueBefore.Value);
         }
         
         return Task.FromResult(query.Count());

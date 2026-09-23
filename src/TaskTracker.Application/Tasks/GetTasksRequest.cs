@@ -4,5 +4,6 @@
 public record GetTasksRequest(
     int Page = 1,
     int PageSize = 20,
-    bool? IsCompleted = null
+    bool? IsCompleted = null,
+    DateTimeOffset? DueBefore = null
 );

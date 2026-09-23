@@ -22,19 +22,22 @@ public static class TaskEndpoints
                 int? page,
                 int? pageSize,
                 bool? isCompleted,
+                DateTimeOffset? dueBefore,
                 TaskService taskService,
                 CancellationToken cancellationToken) =>
             {
                 var request = new GetTasksRequest(
                     page ?? 1,
                     pageSize ?? 20,
-                    isCompleted);
+                    isCompleted,
+                    dueBefore);
 
                 var tasks = await taskService.GetAllPagedAsync(request, cancellationToken);
 
                 return Results.Ok(tasks);
             })
-            .Produces<PagedResponse<TaskResponse>>(StatusCodes.Status200OK);
+            .Produces<PagedResponse<TaskResponse>>(StatusCodes.Status200OK)
+            .ProducesValidationProblem(StatusCodes.Status400BadRequest);
 
 
         app.MapGet("/tasks/{id:guid}", async (

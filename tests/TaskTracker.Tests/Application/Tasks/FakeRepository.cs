@@ -24,7 +24,11 @@ public class FakeRepository : ITaskRepository
         return Task.FromResult(task);
     }
 
-    public Task<IReadOnlyList<TaskItem>> GetPagedAsync(int skip, int take, bool? isCompleted,
+    public Task<IReadOnlyList<TaskItem>> GetPagedAsync(
+        int skip, 
+        int take, 
+        bool? isCompleted,
+        DateTimeOffset? dueDate,
         CancellationToken cancellationToken)
     {
         IEnumerable<TaskItem> query = _tasks;
@@ -41,7 +45,10 @@ public class FakeRepository : ITaskRepository
         return Task.FromResult(results);
     }
 
-    public Task<int> CountAsync(bool? isCompleted, CancellationToken cancellationToken)
+    public Task<int> CountAsync(
+        bool? isCompleted,
+        DateTimeOffset? dueDate,
+        CancellationToken cancellationToken)
     {
         IEnumerable<TaskItem> query = _tasks;
 
